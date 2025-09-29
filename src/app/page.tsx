@@ -1,9 +1,18 @@
+import Image from 'next/image';
+import FloatingCropButton from '@/components/FloatingCropButton';
+
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm">
-        <h1 className="text-4xl font-bold text-center">Welcome to Canalyzer Demo</h1>
-        <p className="text-center mt-4">Get started by editing src/app/page.tsx</p>
+    <main className="relative min-h-screen flex items-center justify-center bg-black">
+      <div className="relative w-full max-w-[430px] h-screen max-h-[932px]">
+        <Image
+          src="/iPhone 14 & 15 Pro Max - 3.png"
+          alt="App Background"
+          fill
+          className="object-contain"
+          priority
+        />
+        <FloatingCropButton />
       </div>
     </main>
   );
