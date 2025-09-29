@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
+import AnalysisModal from './AnalysisModal';
 
 interface SelectionArea {
   startX: number;
@@ -14,6 +15,8 @@ export default function FloatingCropButton() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSelecting, setIsSelecting] = useState(false);
   const [selection, setSelection] = useState<SelectionArea | null>(null);
+  const [isAnalysisModalOpen, setIsAnalysisModalOpen] = useState(false);
+  const [screenshotUrl, setScreenshotUrl] = useState<string | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -35,8 +38,9 @@ export default function FloatingCropButton() {
     const imgOffsetX = imgRect.left - rect.left;
     const imgOffsetY = imgRect.top - rect.top;
     
-    // Check if click is within image bounds
-    if (clickX >= imgOffsetX && clickX <= imgOffsetX + imgRect.width &&
+    // Check if click is within image bounds and no selection exists
+    if (!selection && 
+        clickX >= imgOffsetX && clickX <= imgOffsetX + imgRect.width &&
         clickY >= imgOffsetY && clickY <= imgOffsetY + imgRect.height) {
       setIsSelecting(true);
       setSelection({
@@ -123,21 +127,18 @@ export default function FloatingCropButton() {
       tempCanvas.height
     );
 
-    // Convert canvas to blob and download
+    // Convert canvas to blob and store it
     tempCanvas.toBlob((blob) => {
       if (!blob) return;
       
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `screenshot_${Date.now()}.png`;
-      a.click();
+      setScreenshotUrl(url);
       
-      URL.revokeObjectURL(url);
+      // Close the crop modal and open analysis modal
+      setSelection(null);
+      setIsModalOpen(false);
+      setIsAnalysisModalOpen(true);
     });
-
-    setSelection(null);
-    setIsModalOpen(false);
   };
 
   useEffect(() => {
@@ -188,8 +189,8 @@ export default function FloatingCropButton() {
       </button>
 
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-90 z-50">
-          <div className="absolute inset-0">
+        <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center">
+          <div className="relative w-full max-w-[430px] h-screen max-h-[932px]">
             <div 
               ref={containerRef}
               className="relative w-full h-full cursor-crosshair"
@@ -210,7 +211,7 @@ export default function FloatingCropButton() {
                 style={{ width: '100%', height: '100%' }}
               />
               
-              <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-black/75 text-white px-4 py-2 rounded-lg">
+              <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-black/75 text-white px-4 py-2 rounded-lg z-10">
                 <p className="text-sm">Drag to select area for screenshot</p>
               </div>
 
@@ -219,7 +220,7 @@ export default function FloatingCropButton() {
                   setIsModalOpen(false);
                   setSelection(null);
                 }}
-                className="absolute top-4 right-4 text-white hover:text-gray-300 text-3xl bg-black/50 w-10 h-10 rounded-full flex items-center justify-center"
+                className="absolute top-4 right-4 text-white hover:text-gray-300 text-3xl bg-black/50 w-10 h-10 rounded-full flex items-center justify-center z-10"
               >
                 ×
               </button>
@@ -244,6 +245,19 @@ export default function FloatingCropButton() {
           </div>
         </div>
       )}
+      
+      <AnalysisModal 
+        isOpen={isAnalysisModalOpen}
+        onClose={() => {
+          setIsAnalysisModalOpen(false);
+          // Clean up the blob URL when closing
+          if (screenshotUrl) {
+            URL.revokeObjectURL(screenshotUrl);
+            setScreenshotUrl(null);
+          }
+        }}
+        screenshotUrl={screenshotUrl}
+      />
     </>
   );
 }
