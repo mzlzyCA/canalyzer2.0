@@ -7,9 +7,10 @@ interface AnalysisModalProps {
   isOpen: boolean;
   onClose: () => void;
   screenshotUrl: string | null;
+  onGoToPersonalAnalysis: () => void;
 }
 
-export default function AnalysisModal({ isOpen, onClose, screenshotUrl }: AnalysisModalProps) {
+export default function AnalysisModal({ isOpen, onClose, screenshotUrl, onGoToPersonalAnalysis }: AnalysisModalProps) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -122,7 +123,7 @@ export default function AnalysisModal({ isOpen, onClose, screenshotUrl }: Analys
 
                 {/* Bottom Button */}
                 <button 
-                  onClick={onClose}
+                  onClick={onGoToPersonalAnalysis}
                   className="w-full bg-[#FFC470] text-white py-4 rounded-full font-semibold text-lg"
                 >
                   Go to Personal Analysis

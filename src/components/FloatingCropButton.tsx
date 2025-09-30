@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import AnalysisModal from './AnalysisModal';
+import PersonalAnalysis from './PersonalAnalysis';
 
 interface SelectionArea {
   startX: number;
@@ -16,6 +17,7 @@ export default function FloatingCropButton() {
   const [isSelecting, setIsSelecting] = useState(false);
   const [selection, setSelection] = useState<SelectionArea | null>(null);
   const [isAnalysisModalOpen, setIsAnalysisModalOpen] = useState(false);
+  const [isPersonalAnalysisOpen, setIsPersonalAnalysisOpen] = useState(false);
   const [screenshotUrl, setScreenshotUrl] = useState<string | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -250,6 +252,23 @@ export default function FloatingCropButton() {
         isOpen={isAnalysisModalOpen}
         onClose={() => {
           setIsAnalysisModalOpen(false);
+          // Clean up the blob URL when closing
+          if (screenshotUrl) {
+            URL.revokeObjectURL(screenshotUrl);
+            setScreenshotUrl(null);
+          }
+        }}
+        onGoToPersonalAnalysis={() => {
+          setIsAnalysisModalOpen(false);
+          setIsPersonalAnalysisOpen(true);
+        }}
+        screenshotUrl={screenshotUrl}
+      />
+      
+      <PersonalAnalysis
+        isOpen={isPersonalAnalysisOpen}
+        onClose={() => {
+          setIsPersonalAnalysisOpen(false);
           // Clean up the blob URL when closing
           if (screenshotUrl) {
             URL.revokeObjectURL(screenshotUrl);
