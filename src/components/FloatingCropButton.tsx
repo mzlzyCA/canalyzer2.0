@@ -12,7 +12,11 @@ interface SelectionArea {
   endY: number;
 }
 
-export default function FloatingCropButton() {
+interface FloatingCropButtonProps {
+  onScreenshotTaken?: (url: string) => void;
+}
+
+export default function FloatingCropButton({ onScreenshotTaken }: FloatingCropButtonProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSelecting, setIsSelecting] = useState(false);
   const [selection, setSelection] = useState<SelectionArea | null>(null);
@@ -135,6 +139,11 @@ export default function FloatingCropButton() {
       
       const url = URL.createObjectURL(blob);
       setScreenshotUrl(url);
+      
+      // Notify parent component
+      if (onScreenshotTaken) {
+        onScreenshotTaken(url);
+      }
       
       // Close the crop modal and open analysis modal
       setSelection(null);
@@ -273,6 +282,14 @@ export default function FloatingCropButton() {
           if (screenshotUrl) {
             URL.revokeObjectURL(screenshotUrl);
             setScreenshotUrl(null);
+          }
+        }}
+        onStoreInDatabase={() => {
+          setIsPersonalAnalysisOpen(false);
+          // Navigate to database - need to call parent function
+          if (onScreenshotTaken) {
+            // Trigger database navigation through parent
+            window.dispatchEvent(new CustomEvent('navigateToDatabase'));
           }
         }}
         screenshotUrl={screenshotUrl}

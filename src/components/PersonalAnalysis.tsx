@@ -7,6 +7,7 @@ interface PersonalAnalysisProps {
   isOpen: boolean;
   onClose: () => void;
   screenshotUrl: string | null;
+  onStoreInDatabase: () => void;
 }
 
 interface AnalysisSection {
@@ -62,7 +63,7 @@ const analysisSections: AnalysisSection[] = [
   }
 ];
 
-export default function PersonalAnalysis({ isOpen, onClose, screenshotUrl }: PersonalAnalysisProps) {
+export default function PersonalAnalysis({ isOpen, onClose, screenshotUrl, onStoreInDatabase }: PersonalAnalysisProps) {
   const [formData, setFormData] = useState<Record<string, Record<string, string>>>({});
   const [expandedSection, setExpandedSection] = useState<string | null>('Investment Prediction');
 
@@ -176,7 +177,10 @@ export default function PersonalAnalysis({ isOpen, onClose, screenshotUrl }: Per
           </button>
 
           {/* Store In Database Button */}
-          <button className="w-full py-4 bg-[#4CAF50] text-white rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-[#45a049] transition-colors">
+          <button 
+            onClick={onStoreInDatabase}
+            className="w-full py-4 bg-[#EE896B] text-white rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-[#E57A5C] transition-colors"
+          >
             Store In Database
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
               <path d="M7 10L10 10M10 10L13 10M10 10L10 7M10 10L10 13" stroke="white" strokeWidth="2" strokeLinecap="round"/>

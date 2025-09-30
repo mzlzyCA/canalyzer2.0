@@ -27,12 +27,9 @@ export default function AnalysisModal({ isOpen, onClose, screenshotUrl, onGoToPe
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center">
-      {/* Backdrop */}
-      <div className="absolute inset-0 bg-black bg-opacity-50" onClick={onClose} />
-      
       {/* Modal container aligned with main image */}
-      <div className="relative w-full max-w-[430px] h-screen max-h-[932px] flex items-end pointer-events-none">
-        <div className="relative w-full bg-white rounded-t-[30px] max-h-[85%] overflow-y-auto animate-slide-up pointer-events-auto">
+      <div className="relative w-full max-w-[430px] h-screen max-h-[932px] flex items-end">
+        <div className="relative w-full bg-white rounded-t-[30px] max-h-[85%] overflow-y-auto animate-slide-up">
           <div className="relative">
             {/* Header with white background */}
             <div className="bg-white px-6 py-4 border-b border-gray-100">
