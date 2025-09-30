@@ -7,8 +7,8 @@ interface BottomNavigationProps {
 
 export default function BottomNavigation({ activeTab, onTabChange }: BottomNavigationProps) {
   return (
-    <div className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200">
-      <div className="flex items-center justify-around py-2">
+    <div className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50">
+      <div className="flex items-center justify-around py-3">
         <button 
           onClick={() => onTabChange('asking')}
           className={`flex flex-col items-center p-2 ${activeTab === 'asking' ? 'text-[#FFC470]' : 'text-gray-500'}`}

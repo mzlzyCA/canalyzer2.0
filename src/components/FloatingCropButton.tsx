@@ -237,7 +237,7 @@ export default function FloatingCropButton({ onScreenshotTaken }: FloatingCropBu
               </button>
 
               {selection && (
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-4">
+                <div className="absolute bottom-20 left-1/2 -translate-x-1/2 flex gap-4 z-20">
                   <button
                     onClick={() => setSelection(null)}
                     className="px-6 py-2 bg-white/20 backdrop-blur text-white border border-white/30 rounded-lg hover:bg-white/30"

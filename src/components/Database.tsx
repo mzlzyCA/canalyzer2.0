@@ -144,9 +144,11 @@ export default function Database({ isOpen, onClose, screenshotUrl }: DatabasePro
         </div>
 
         {/* White Canvas Overlay */}
-        <div className="absolute inset-4 bottom-20 bg-white/95 rounded-2xl overflow-hidden shadow-2xl">
+        <div className="absolute inset-4 bottom-[76px] rounded-2xl overflow-hidden shadow-2xl">
+          {/* White background layer */}
+          <div className="absolute inset-0 bg-white/95 rounded-2xl z-0" />
           {/* Header */}
-          <div className="relative z-10 p-4 flex items-center justify-between border-b border-gray-200">
+          <div className="relative z-20 p-4 flex items-center justify-between border-b border-gray-200 bg-white">
             <h2 className="text-xl font-bold text-gray-900">Chart Analysis Database</h2>
             <button
               onClick={onClose}
@@ -161,13 +163,13 @@ export default function Database({ isOpen, onClose, screenshotUrl }: DatabasePro
           {/* Draggable Canvas */}
           <div
             ref={canvasRef}
-            className="relative flex-1 h-[calc(100%-140px)] overflow-hidden"
+            className="relative flex-1 h-[calc(100%-140px)] z-30"
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseUp}
           >
             {/* Render connections */}
-            <svg className="absolute inset-0 pointer-events-none">
+            <svg className="absolute inset-0 pointer-events-none z-40" style={{ width: '100%', height: '100%' }}>
               <defs>
                 <marker
                   id="arrowhead"
@@ -179,7 +181,7 @@ export default function Database({ isOpen, onClose, screenshotUrl }: DatabasePro
                 >
                   <polygon
                     points="0 0, 10 3, 0 6"
-                    fill="#3B82F6"
+                    fill="#EE896B"
                   />
                 </marker>
               </defs>
@@ -192,8 +194,8 @@ export default function Database({ isOpen, onClose, screenshotUrl }: DatabasePro
                     const dx = screenshotNode.x - node.x;
                     const dy = screenshotNode.y - node.y;
                     const distance = Math.sqrt(dx * dx + dy * dy);
-                    const offsetX = (dx / distance) * 48; // Half of screenshot node size (96px/2)
-                    const offsetY = (dy / distance) * 48;
+                    const offsetX = (dx / distance) * 40; // Half of screenshot node size (80px/2)
+                    const offsetY = (dy / distance) * 40;
                     
                     return (
                       <g key={`line-${node.id}`}>
@@ -202,9 +204,9 @@ export default function Database({ isOpen, onClose, screenshotUrl }: DatabasePro
                           y1={node.y}
                           x2={screenshotNode.x - offsetX}
                           y2={screenshotNode.y - offsetY}
-                          stroke="#3B82F6"
+                          stroke="#EE896B"
                           strokeWidth="2"
-                          strokeOpacity="0.5"
+                          strokeOpacity="0.8"
                           markerEnd="url(#arrowhead)"
                         />
                         {/* Add labels on connections */}
@@ -231,29 +233,38 @@ export default function Database({ isOpen, onClose, screenshotUrl }: DatabasePro
             {nodes.map(node => (
               <div
                 key={node.id}
-                className="absolute transform -translate-x-1/2 -translate-y-1/2 cursor-move select-none"
+                className="absolute transform -translate-x-1/2 -translate-y-1/2 cursor-move select-none z-50"
                 style={{
                   left: node.x,
                   top: node.y,
                 }}
                 onMouseDown={(e) => handleMouseDown(e, node.id)}
               >
-                {node.type === 'screenshot' && node.imageUrl ? (
+                {node.type === 'screenshot' ? (
                   <div
-                    className="relative w-24 h-24 rounded-full shadow-lg flex items-center justify-center overflow-hidden transition-transform hover:scale-110 border-4 bg-white"
-                    style={{ borderColor: node.color }}
+                    className="relative w-20 h-20 rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-110 border-4"
+                    style={{ 
+                      backgroundColor: node.imageUrl ? 'white' : node.color,
+                      borderColor: node.color
+                    }}
                   >
-                    <div className="relative w-full h-full p-1">
-                      <div className="relative w-full h-full rounded-full overflow-hidden">
-                        <Image
-                          src={node.imageUrl}
-                          alt={node.label}
-                          fill
-                          className="object-cover"
-                          unoptimized
-                        />
+                    {node.imageUrl ? (
+                      <div className="relative w-full h-full p-1">
+                        <div className="relative w-full h-full rounded-full overflow-hidden">
+                          <Image
+                            src={node.imageUrl}
+                            alt={node.label}
+                            fill
+                            className="object-cover"
+                            unoptimized
+                          />
+                        </div>
                       </div>
-                    </div>
+                    ) : (
+                      <span className="text-white text-sm font-semibold text-center">
+                        {node.label}
+                      </span>
+                    )}
                   </div>
                 ) : (
                   <div
@@ -273,7 +284,7 @@ export default function Database({ isOpen, onClose, screenshotUrl }: DatabasePro
             ))}
 
             {/* Add new connection button */}
-            <button className="absolute bottom-4 right-4 bg-[#FFC470] text-white p-3 rounded-full shadow-lg hover:bg-[#FFB347] transition-colors">
+            <button className="absolute bottom-20 right-4 bg-[#FFC470] text-white p-3 rounded-full shadow-lg hover:bg-[#FFB347] transition-colors z-60">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                 <path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
               </svg>
@@ -281,45 +292,6 @@ export default function Database({ isOpen, onClose, screenshotUrl }: DatabasePro
           </div>
         </div>
 
-        {/* Bottom Navigation */}
-        <div className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200">
-          <div className="flex items-center justify-around py-2">
-            <button className="flex flex-col items-center p-2 text-gray-500">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M9 19V20H15V19M12 2L2 7V11C2 16.5 6 21.2 12 22C18 21.2 22 16.5 22 11V7L12 2Z" stroke="currentColor" strokeWidth="2"/>
-              </svg>
-              <span className="text-xs mt-1">Asking</span>
-            </button>
-            <button className="flex flex-col items-center p-2 text-gray-500">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <rect x="3" y="3" width="7" height="7" stroke="currentColor" strokeWidth="2"/>
-                <rect x="14" y="3" width="7" height="7" stroke="currentColor" strokeWidth="2"/>
-                <rect x="3" y="14" width="7" height="7" stroke="currentColor" strokeWidth="2"/>
-                <rect x="14" y="14" width="7" height="7" stroke="currentColor" strokeWidth="2"/>
-              </svg>
-              <span className="text-xs mt-1">Dashboard</span>
-            </button>
-            <button className="flex flex-col items-center p-2 text-gray-500">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M3 12H7L10 20L14 4L17 12H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              <span className="text-xs mt-1">Analysis</span>
-            </button>
-            <button className="flex flex-col items-center p-2 text-[#FFC470]">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2ZM12 4C16.4 4 20 7.6 20 12C20 16.4 16.4 20 12 20C7.6 20 4 16.4 4 12C4 7.6 7.6 4 12 4ZM8 8V16H16V8H8ZM10 10H14V14H10V10Z"/>
-              </svg>
-              <span className="text-xs mt-1">Database</span>
-            </button>
-            <button className="flex flex-col items-center p-2 text-gray-500">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M12 15C13.66 15 15 13.66 15 12C15 10.34 13.66 9 12 9C10.34 9 9 10.34 9 12C9 13.66 10.34 15 12 15Z" stroke="currentColor" strokeWidth="2"/>
-                <path d="M19.4 15C19.2 15.4 19.1 15.8 19.1 16.2L21 17.5L19.5 20L17.2 19.2C16.7 19.7 16.2 20 15.6 20.3L15.2 22.7H12.2L11.8 20.3C11.2 20 10.7 19.7 10.2 19.2L7.9 20L6.4 17.5L8.3 16.2C8.3 15.8 8.2 15.4 8 15C8.2 14.6 8.3 14.2 8.3 13.8L6.4 12.5L7.9 10L10.2 10.8C10.7 10.3 11.2 10 11.8 9.7L12.2 7.3H15.2L15.6 9.7C16.2 10 16.7 10.3 17.2 10.8L19.5 10L21 12.5L19.1 13.8C19.1 14.2 19.2 14.6 19.4 15Z" stroke="currentColor" strokeWidth="2"/>
-              </svg>
-              <span className="text-xs mt-1">Settings</span>
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   );
